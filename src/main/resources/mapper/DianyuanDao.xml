@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DianyuanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.dianyuan_name as dianyuanName
+        ,a.dianyuan_phone as dianyuanPhone
+        ,a.dianyuan_email as dianyuanEmail
+        ,a.dianyuan_types as dianyuanTypes
+        ,a.dianyuan_content as dianyuanContent
+        ,a.dianyuan_delete as dianyuanDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DianyuanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM dianyuan  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.dianyuanName != '' and params.dianyuanName != null and params.dianyuanName != 'null' ">
+                and a.dianyuan_name like CONCAT('%',#{params.dianyuanName},'%')
+            </if>
+            <if test=" params.dianyuanPhone != '' and params.dianyuanPhone != null and params.dianyuanPhone != 'null' ">
+                and a.dianyuan_phone like CONCAT('%',#{params.dianyuanPhone},'%')
+            </if>
+            <if test=" params.dianyuanEmail != '' and params.dianyuanEmail != null and params.dianyuanEmail != 'null' ">
+                and a.dianyuan_email like CONCAT('%',#{params.dianyuanEmail},'%')
+            </if>
+            <if test="params.dianyuanTypes != null and params.dianyuanTypes != ''">
+                and a.dianyuan_types = #{params.dianyuanTypes}
+            </if>
+            <if test=" params.dianyuanContent != '' and params.dianyuanContent != null and params.dianyuanContent != 'null' ">
+                and a.dianyuan_content like CONCAT('%',#{params.dianyuanContent},'%')
+            </if>
+            <if test="params.dianyuanDeleteStart != null and params.dianyuanDeleteStart != ''">
+                <![CDATA[  and a.dianyuan_delete >= #{params.dianyuanDeleteStart}   ]]>
+            </if>
+            <if test="params.dianyuanDeleteEnd != null and params.dianyuanDeleteEnd != ''">
+                <![CDATA[  and a.dianyuan_delete <= #{params.dianyuanDeleteEnd}   ]]>
+            </if>
+             <if test="params.dianyuanDelete != null and params.dianyuanDelete != ''">
+                and a.dianyuan_delete = #{params.dianyuanDelete}
+             </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

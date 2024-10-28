@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DangaoCommentbackDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.dangao_id as dangaoId
+        ,a.yonghu_id as yonghuId
+        ,a.dangao_commentback_text as dangaoCommentbackText
+        ,a.insert_time as insertTime
+        ,a.reply_text as replyText
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DangaoCommentbackView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,dangao.dangao_name as dangaoName
+        ,dangao.dangao_uuid_number as dangaoUuidNumber
+        ,dangao.dangao_photo as dangaoPhoto
+        ,dangao.dangao_types as dangaoTypes
+        ,dangao.dangao_kucun_number as dangaoKucunNumber
+        ,dangao.dangao_price as dangaoPrice
+        ,dangao.dangao_old_money as dangaoOldMoney
+        ,dangao.dangao_new_money as dangaoNewMoney
+        ,dangao.dangao_clicknum as dangaoClicknum
+        ,dangao.dangao_content as dangaoContent
+        ,dangao.shangxia_types as shangxiaTypes
+        ,dangao.dangao_delete as dangaoDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.yonghu_sum_jifen as yonghuSumJifen
+        ,yonghu.yonghu_new_jifen as yonghuNewJifen
+        ,yonghu.huiyuandengji_types as huiyuandengjiTypes
+
+        FROM dangao_commentback  a
+        left JOIN dangao dangao ON a.dangao_id = dangao.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.dangaoId != null and params.dangaoId != ''">
+                and (
+                    a.dangao_id = #{params.dangaoId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.dangaoCommentbackText != '' and params.dangaoCommentbackText != null and params.dangaoCommentbackText != 'null' ">
+                and a.dangao_commentback_text like CONCAT('%',#{params.dangaoCommentbackText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.replyText != '' and params.replyText != null and params.replyText != 'null' ">
+                and a.reply_text like CONCAT('%',#{params.replyText},'%')
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断商品的id不为空 -->
+            <if test=" params.dangaoIdNotNull != '' and params.dangaoIdNotNull != null and params.dangaoIdNotNull != 'null' ">
+                and a.dangao_id IS NOT NULL
+            </if>
+            <if test=" params.dangaoName != '' and params.dangaoName != null and params.dangaoName != 'null' ">
+                and dangao.dangao_name like CONCAT('%',#{params.dangaoName},'%')
+            </if>
+            <if test=" params.dangaoUuidNumber != '' and params.dangaoUuidNumber != null and params.dangaoUuidNumber != 'null' ">
+                and dangao.dangao_uuid_number like CONCAT('%',#{params.dangaoUuidNumber},'%')
+            </if>
+            <if test="params.dangaoTypes != null  and params.dangaoTypes != ''">
+                and dangao.dangao_types = #{params.dangaoTypes}
+            </if>
+
+            <if test="params.dangaoKucunNumberStart != null  and params.dangaoKucunNumberStart != '' ">
+                <![CDATA[  and dangao.dangao_kucun_number >= #{params.dangaoKucunNumberStart}   ]]>
+            </if>
+            <if test="params.dangaoKucunNumberEnd != null  and params.dangaoKucunNumberEnd != '' ">
+                <![CDATA[  and dangao.dangao_kucun_number <= #{params.dangaoKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.dangaoKucunNumber != null  and params.dangaoKucunNumber != '' ">
+                and dangao.dangao_kucun_number = #{params.dangaoKucunNumber}
+            </if>
+            <if test="params.dangaoPriceStart != null  and params.dangaoPriceStart != '' ">
+                <![CDATA[  and dangao.dangao_price >= #{params.dangaoPriceStart}   ]]>
+            </if>
+            <if test="params.dangaoPriceEnd != null  and params.dangaoPriceEnd != '' ">
+                <![CDATA[  and dangao.dangao_price <= #{params.dangaoPriceEnd}   ]]>
+            </if>
+            <if test="params.dangaoPrice != null  and params.dangaoPrice != '' ">
+                and dangao.dangao_price = #{params.dangaoPrice}
+            </if>
+            <if test="params.dangaoOldMoneyStart != null ">
+                <![CDATA[  and dangao.dangao_old_money >= #{params.dangaoOldMoneyStart}   ]]>
+            </if>
+            <if test="params.dangaoOldMoneyEnd != null ">
+                <![CDATA[  and dangao.dangao_old_money <= #{params.dangaoOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.dangaoNewMoneyStart != null ">
+                <![CDATA[  and dangao.dangao_new_money >= #{params.dangaoNewMoneyStart}   ]]>
+            </if>
+            <if test="params.dangaoNewMoneyEnd != null ">
+                <![CDATA[  and dangao.dangao_new_money <= #{params.dangaoNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.dangaoClicknumStart != null  and params.dangaoClicknumStart != '' ">
+                <![CDATA[  and dangao.dangao_clicknum >= #{params.dangaoClicknumStart}   ]]>
+            </if>
+            <if test="params.dangaoClicknumEnd != null  and params.dangaoClicknumEnd != '' ">
+                <![CDATA[  and dangao.dangao_clicknum <= #{params.dangaoClicknumEnd}   ]]>
+            </if>
+            <if test="params.dangaoClicknum != null  and params.dangaoClicknum != '' ">
+                and dangao.dangao_clicknum = #{params.dangaoClicknum}
+            </if>
+            <if test=" params.dangaoContent != '' and params.dangaoContent != null and params.dangaoContent != 'null' ">
+                and dangao.dangao_content like CONCAT('%',#{params.dangaoContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and dangao.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.dangaoDeleteStart != null  and params.dangaoDeleteStart != '' ">
+                <![CDATA[  and dangao.dangao_delete >= #{params.dangaoDeleteStart}   ]]>
+            </if>
+            <if test="params.dangaoDeleteEnd != null  and params.dangaoDeleteEnd != '' ">
+                <![CDATA[  and dangao.dangao_delete <= #{params.dangaoDeleteEnd}   ]]>
+            </if>
+            <if test="params.dangaoDelete != null  and params.dangaoDelete != '' ">
+                and dangao.dangao_delete = #{params.dangaoDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(dangao.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(dangao.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.yonghuSumJifenStart != null ">
+                <![CDATA[  and yonghu.yonghu_sum_jifen >= #{params.yonghuSumJifenStart}   ]]>
+            </if>
+            <if test="params.yonghuSumJifenEnd != null ">
+                <![CDATA[  and yonghu.yonghu_sum_jifen <= #{params.yonghuSumJifenEnd}   ]]>
+            </if>
+            <if test="params.yonghuNewJifenStart != null ">
+                <![CDATA[  and yonghu.yonghu_new_jifen >= #{params.yonghuNewJifenStart}   ]]>
+            </if>
+            <if test="params.yonghuNewJifenEnd != null ">
+                <![CDATA[  and yonghu.yonghu_new_jifen <= #{params.yonghuNewJifenEnd}   ]]>
+            </if>
+            <if test="params.huiyuandengjiTypes != null  and params.huiyuandengjiTypes != ''">
+                and yonghu.huiyuandengji_types = #{params.huiyuandengjiTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DangaoDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.dangao_name as dangaoName
+        ,a.dangao_uuid_number as dangaoUuidNumber
+        ,a.dangao_photo as dangaoPhoto
+        ,a.dangao_types as dangaoTypes
+        ,a.dangao_kucun_number as dangaoKucunNumber
+        ,a.dangao_price as dangaoPrice
+        ,a.dangao_old_money as dangaoOldMoney
+        ,a.dangao_new_money as dangaoNewMoney
+        ,a.dangao_clicknum as dangaoClicknum
+        ,a.dangao_content as dangaoContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.dangao_delete as dangaoDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DangaoView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM dangao  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.dangaoName != '' and params.dangaoName != null and params.dangaoName != 'null' ">
+                and a.dangao_name like CONCAT('%',#{params.dangaoName},'%')
+            </if>
+            <if test=" params.dangaoUuidNumber != '' and params.dangaoUuidNumber != null and params.dangaoUuidNumber != 'null' ">
+                and a.dangao_uuid_number like CONCAT('%',#{params.dangaoUuidNumber},'%')
+            </if>
+            <if test="params.dangaoTypes != null and params.dangaoTypes != ''">
+                and a.dangao_types = #{params.dangaoTypes}
+            </if>
+            <if test="params.dangaoKucunNumberStart != null and params.dangaoKucunNumberStart != ''">
+                <![CDATA[  and a.dangao_kucun_number >= #{params.dangaoKucunNumberStart}   ]]>
+            </if>
+            <if test="params.dangaoKucunNumberEnd != null and params.dangaoKucunNumberEnd != ''">
+                <![CDATA[  and a.dangao_kucun_number <= #{params.dangaoKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.dangaoKucunNumber != null and params.dangaoKucunNumber != ''">
+                and a.dangao_kucun_number = #{params.dangaoKucunNumber}
+             </if>
+            <if test="params.dangaoPriceStart != null and params.dangaoPriceStart != ''">
+                <![CDATA[  and a.dangao_price >= #{params.dangaoPriceStart}   ]]>
+            </if>
+            <if test="params.dangaoPriceEnd != null and params.dangaoPriceEnd != ''">
+                <![CDATA[  and a.dangao_price <= #{params.dangaoPriceEnd}   ]]>
+            </if>
+             <if test="params.dangaoPrice != null and params.dangaoPrice != ''">
+                and a.dangao_price = #{params.dangaoPrice}
+             </if>
+            <if test="params.dangaoOldMoneyStart != null ">
+                <![CDATA[  and a.dangao_old_money >= #{params.dangaoOldMoneyStart}   ]]>
+            </if>
+            <if test="params.dangaoOldMoneyEnd != null ">
+                <![CDATA[  and a.dangao_old_money <= #{params.dangaoOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.dangaoNewMoneyStart != null ">
+                <![CDATA[  and a.dangao_new_money >= #{params.dangaoNewMoneyStart}   ]]>
+            </if>
+            <if test="params.dangaoNewMoneyEnd != null ">
+                <![CDATA[  and a.dangao_new_money <= #{params.dangaoNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.dangaoClicknumStart != null and params.dangaoClicknumStart != ''">
+                <![CDATA[  and a.dangao_clicknum >= #{params.dangaoClicknumStart}   ]]>
+            </if>
+            <if test="params.dangaoClicknumEnd != null and params.dangaoClicknumEnd != ''">
+                <![CDATA[  and a.dangao_clicknum <= #{params.dangaoClicknumEnd}   ]]>
+            </if>
+             <if test="params.dangaoClicknum != null and params.dangaoClicknum != ''">
+                and a.dangao_clicknum = #{params.dangaoClicknum}
+             </if>
+            <if test=" params.dangaoContent != '' and params.dangaoContent != null and params.dangaoContent != 'null' ">
+                and a.dangao_content like CONCAT('%',#{params.dangaoContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.dangaoDeleteStart != null and params.dangaoDeleteStart != ''">
+                <![CDATA[  and a.dangao_delete >= #{params.dangaoDeleteStart}   ]]>
+            </if>
+            <if test="params.dangaoDeleteEnd != null and params.dangaoDeleteEnd != ''">
+                <![CDATA[  and a.dangao_delete <= #{params.dangaoDeleteEnd}   ]]>
+            </if>
+             <if test="params.dangaoDelete != null and params.dangaoDelete != ''">
+                and a.dangao_delete = #{params.dangaoDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
